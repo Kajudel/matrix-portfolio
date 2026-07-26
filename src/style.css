@@ -1,0 +1,59 @@
+body{
+margin:0;
+overflow:hidden;
+background:#050505;
+font-family:Arial;
+}
+
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+}
+
+
+
+#camBtn{
+
+position:fixed;
+
+right:40px;
+
+top:40px;
+
+padding:12px 25px;
+
+border-radius:30px;
+
+background:#111;
+
+color:white;
+
+border:1px solid #555;
+
+cursor:pointer;
+
+font-size:16px;
+
+}
+
+
+
+#camBtn:hover{
+
+background:#222;
+
+}
+
+#webcam {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 300px;
+    height: 220px;
+    object-fit: cover;
+    z-index: 10;
+    border-radius: 20px;
+    opacity: 0.8;
+}
