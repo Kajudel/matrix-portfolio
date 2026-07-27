@@ -275,28 +275,37 @@ canvas{
 
 #charge span{
 
+
     display:block;
+
+
 
     height:100%;
 
+
+
     width:0%;
+
 
 
     background:
 
     linear-gradient(
+
     90deg,
+
     #ff0055,
-    #ffffff
+
+    white
+
     );
+
 
 
     box-shadow:
 
-    0 0 25px #ff3366;
+    0 0 20px #ff3366;
 
-
-    transition:.1s;
 
 }
 
@@ -363,62 +372,5 @@ canvas{
 
     color:#ff6699;
 
-
-}
-
-/* ================= HUD FIX ================= */
-
-#hud{
-
-position:fixed;
-
-top:20px;
-left:20px;
-
-z-index:20;
-
-font-family:monospace;
-
-color:#ff3366;
-
-font-size:14px;
-
-letter-spacing:2px;
-
-line-height:28px;
-
-text-shadow:
-0 0 10px #ff3366;
-
-}
-
-
-.hud-title{
-
-font-size:22px;
-
-font-weight:bold;
-
-margin-bottom:12px;
-
-}
-
-
-
-/* remove old big heading overlap */
-
-h1,
-.title,
-.logo{
-
-display:none;
-
-}
-
-#gestureBox,
-.gesture-panel,
-#gesture{
-
-display:none;
 
 }

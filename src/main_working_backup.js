@@ -1,6 +1,4 @@
 import * as THREE from "three";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import "./style.css";
 
 console.log("MATRIX 2.0 COLOR MODE LOADED");
@@ -18,7 +16,8 @@ window.innerWidth/window.innerHeight,
 100
 );
 
-camera.position.z=8;
+camera.position.z=5;
+
 
 
 const renderer=new THREE.WebGLRenderer({
@@ -40,43 +39,7 @@ window.innerHeight
 
 document.body.appendChild(renderer.domElement);
 
-// 👇 HUD STARTS HERE
 
-const hud = document.createElement("div");
-
-hud.id="hud";
-
-hud.innerHTML=`
-
-<div class="hud-title">
-MATRIX 2.0
-</div>
-
-<div>
-● HAND TRACKING : ACTIVE
-</div>
-
-<div>
-● PARTICLES : 3000
-</div>
-
-<div id="mode">
-● MODE : SPHERE
-</div>
-
-<div id="status">
-● STATUS : READY
-</div>
-
-`;
-
-document.body.appendChild(hud);
-
-
-const modeText=document.getElementById("mode");
-const statusText=document.getElementById("status");
-
-// 👆 HUD ENDS HERE
 
 /* ================= PARTICLES ================= */
 
@@ -90,11 +53,7 @@ const geometry=new THREE.BufferGeometry();
 const positions=[];
 const base=[];
 const velocity=[];
-let namePoints = [];
 
-let currentShape="sphere";
-let intro=true;
-let introProgress=0;
 
 
 for(let i=0;i<COUNT;i++){
@@ -171,47 +130,6 @@ material
 
 
 scene.add(sphere);
-const loader = new FontLoader();
-
-loader.load(
-"https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
-(font)=>{
-
-
-const textGeo = new TextGeometry(
-"KAJAL",
-{
-font:font,
-size:0.8,
-height:0.05,
-curveSegments:5
-}
-);
-
-
-textGeo.center();
-
-
-const data =
-textGeo.attributes.position.array;
-
-
-for(let i=0;i<data.length;i+=3){
-
-namePoints.push({
-
-x:data[i],
-y:data[i+1],
-z:data[i+2]
-
-});
-
-}
-
-
-console.log("NAME POINTS READY");
-
-});
 
 
 
@@ -228,10 +146,6 @@ let scale=1;
 let exploding=false;
 
 let pinch=false;
-
-let mouseX = 0;
-let mouseY = 0;
-
 let charge=0;
 
 const chargeBar=document.querySelector("#charge span");
@@ -249,28 +163,15 @@ let targetColor=new THREE.Color(0xff3366);
 
 function animate(){
 
-camera.position.z += (5-camera.position.z)*0.02;
 
 requestAnimationFrame(animate);
 
-if(intro){
-
-introProgress+=0.01;
 
 
-if(introProgress>=1){
+sphere.rotation.x+=rotationX;
 
-intro=false;
+sphere.rotation.y+=rotationY;
 
-}
-
-}
-
-
-
-sphere.rotation.x += rotationX + mouseY * 0.02;
-
-sphere.rotation.y += rotationY + mouseX * 0.02;
 
 
 material.size=
@@ -328,35 +229,11 @@ velocity[id+2]*=.96;
 else{
 
 
-if(intro){
-
-arr[id]+=(
-(Math.random()-0.5)*8 - arr[id]
-)*0.02;
-
-
-arr[id+1]+=(
-(Math.random()-0.5)*8 - arr[id+1]
-)*0.02;
-
-
-arr[id+2]+=(
-(Math.random()-0.5)*8 - arr[id+2]
-)*0.02;
-
-
-}
-else{
-
-
 arr[id]+=(base[id]-arr[id])*.04;
 
 arr[id+1]+=(base[id+1]-arr[id+1])*.04;
 
 arr[id+2]+=(base[id+2]-arr[id+2])*.04;
-
-
-}
 
 
 }
@@ -506,6 +383,7 @@ thumb.y-index.y
 if(distance < 0.05){
 
     pinch=true;
+
     charge += 2;
 
     if(charge > 100)
@@ -514,9 +392,6 @@ if(distance < 0.05){
 
     gestureText.innerHTML =
     "PINCH CHARGING ⚡";
-
-    statusText.innerHTML =
-"● STATUS : CHARGING ⚡";
 
 
     material.size =
@@ -533,9 +408,6 @@ else{
 
         gestureText.innerHTML =
         "ENERGY RELEASE 💥";
-
-        statusText.innerHTML =
-"● STATUS : EXPLOSION 💥";
 
     }
 
@@ -757,308 +629,9 @@ height:720
 cam.start();
 
 
-/* ================= MOUSE CONTROLS ================= */
 
-window.addEventListener("mousemove",(e)=>{
 
-    mouseX =
-    (e.clientX / window.innerWidth - 0.5);
 
-    mouseY =
-    (e.clientY / window.innerHeight - 0.5);
-
-});
-
-
-window.addEventListener("wheel",(e)=>{
-
-    scale += e.deltaY * -0.001;
-
-    scale = THREE.MathUtils.clamp(
-        scale,
-        0.6,
-        2.5
-    );
-
-});
-
-
-window.addEventListener("click",()=>{
-
-    explode();
-
-});
-
-/* ================= PARTICLE SHAPES ================= */
-
-
-function changeShape(shape){
-
-currentShape = shape;
-
-
-for(let i=0;i<COUNT;i++){
-
-let id=i*3;
-
-
-/* ================= SPHERE ================= */
-
-if(shape==="sphere"){
-
-
-let r=1.5;
-
-let phi=Math.random()*Math.PI*2;
-
-let theta=Math.acos(
-2*Math.random()-1
-);
-
-
-base[id]=r*Math.sin(theta)*Math.cos(phi);
-
-base[id+1]=r*Math.sin(theta)*Math.sin(phi);
-
-base[id+2]=r*Math.cos(theta);
-
-}
-
-
-
-/* ================= HEART ================= */
-
-if(shape==="heart"){
-
-
-let t=Math.random()*Math.PI*2;
-
-
-base[id]=
-0.15*(16*Math.pow(Math.sin(t),3));
-
-
-base[id+1]=
-0.15*
-(
-13*Math.cos(t)
--5*Math.cos(2*t)
--2*Math.cos(3*t)
--Math.cos(4*t)
-);
-
-
-base[id+2]=(Math.random()-0.5)*0.5;
-
-
-}
-
-
-
-/* ================= GALAXY ================= */
-
-if(shape==="galaxy"){
-
-
-let angle=Math.random()*Math.PI*10;
-
-let radius=Math.random()*2;
-
-
-base[id]=Math.cos(angle)*radius;
-
-base[id+1]=(Math.random()-0.5)*0.4;
-
-base[id+2]=Math.sin(angle)*radius;
-
-
-}
-
-
-
-/* ================= SATURN ================= */
-
-if(shape==="saturn"){
-
-
-let ring=Math.random()>0.35;
-
-
-if(ring){
-
-
-let angle=Math.random()*Math.PI*2;
-
-let radius=2+
-(Math.random()-0.5)*0.3;
-
-
-base[id]=Math.cos(angle)*radius;
-
-base[id+1]=(Math.random()-0.5)*0.15;
-
-base[id+2]=Math.sin(angle)*radius;
-
-
-}
-else{
-
-
-let r=1.1;
-
-let phi=Math.random()*Math.PI*2;
-
-let theta=Math.acos(
-2*Math.random()-1
-);
-
-
-base[id]=r*Math.sin(theta)*Math.cos(phi);
-
-base[id+1]=r*Math.sin(theta)*Math.sin(phi);
-
-base[id+2]=r*Math.cos(theta);
-
-
-}
-
-
-}
-
-
-
-/* ================= BLACK HOLE ================= */
-
-if(shape==="blackhole"){
-
-
-let angle=Math.random()*Math.PI*12;
-
-let radius=Math.random()*2.5;
-
-
-base[id]=Math.cos(angle)*radius;
-
-base[id+1]=(Math.random()-0.5)*0.1;
-
-base[id+2]=Math.sin(angle)*radius;
-
-
-}
-
-
-
-/* ================= FIRE ORB ================= */
-
-if(shape==="fire"){
-
-
-let r=1.2+Math.random()*0.5;
-
-
-let phi=Math.random()*Math.PI*2;
-
-let theta=Math.random()*Math.PI;
-
-
-base[id]=r*Math.sin(theta)*Math.cos(phi);
-
-base[id+1]=r*Math.sin(theta)*Math.sin(phi);
-
-base[id+2]=r*Math.cos(theta);
-
-
-}
-
-
-
-/* ================= DNA HELIX ================= */
-
-if(shape==="dna"){
-
-
-let t=i*0.15;
-
-
-let radius=0.8;
-
-
-base[id]=Math.cos(t)*radius;
-
-base[id+1]=(i/COUNT-0.5)*4;
-
-base[id+2]=Math.sin(t)*radius;
-
-
-
-}
-
-
-
-
-}
-
-if(shape==="sphere")
-targetColor.set(0xff3366);
-
-if(shape==="heart")
-targetColor.set(0xff0033);
-
-if(shape==="galaxy")
-targetColor.set(0x00ffff);
-
-if(shape==="saturn")
-targetColor.set(0xffcc33);
-
-if(shape==="blackhole")
-targetColor.set(0x8800ff);
-
-if(shape==="fire")
-targetColor.set(0xff6600);
-
-if(shape==="dna")
-targetColor.set(0x0099ff);
-
-gestureText.innerHTML =
-shape.toUpperCase()+" MODE ✨";
-modeText.innerHTML =
-"● MODE : "+shape.toUpperCase();
-
-
-}
-
-window.addEventListener("keydown",(e)=>{
-
-
-if(e.key==="1")
-changeShape("sphere");
-
-
-if(e.key==="2")
-changeShape("heart");
-
-
-if(e.key==="3")
-changeShape("galaxy");
-
-
-if(e.key==="4")
-changeShape("saturn");
-
-
-if(e.key==="5")
-changeShape("blackhole");
-
-
-if(e.key==="6")
-changeShape("fire");
-
-
-if(e.key==="7")
-changeShape("dna");
-
-
-});
 
 /* ================= RESIZE ================= */
 
